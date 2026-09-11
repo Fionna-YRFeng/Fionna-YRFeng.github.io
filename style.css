@@ -12,3 +12,7 @@
 
 /* Publication details and release dates */
 .paper-media{min-width:0}.paper-figure{line-height:0}.conference-label{z-index:1;line-height:1.5}.paper-date{color:#737d88;font-size:12px;line-height:1.6;margin:7px 0 0;text-align:center}.paper-contributions{font-size:14px;line-height:1.75;color:#566372;margin:12px 0;padding-left:18px}.paper-contributions li{padding-left:3px;margin:0 0 8px}.paper-contributions strong{font-weight:600;color:#344c64}@media(max-width:480px){.paper-media{max-width:300px}}
+
+/* Keep the desktop profile anchored while the main column scrolls. */
+@media(min-width:701px){.profile{top:134px;max-height:calc(100vh - 150px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}.profile::-webkit-scrollbar{display:none}}
+@media(min-width:1400px){.profile{top:142px;max-height:calc(100vh - 158px)}}
