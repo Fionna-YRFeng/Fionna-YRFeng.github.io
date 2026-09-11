@@ -7,8 +7,8 @@
 @media print{.portrait{float:left;width:90px;height:90px;margin-right:20px}.paper{grid-template-columns:160px minmax(0,1fr)}.conference-label{print-color-adjust:exact}}
 .education{grid-template-columns:100px minmax(0,1fr);gap:22px}.education .institution-logo{width:100px;height:64px}.institution-logo.sustech{height:80px}.institution-logo.mgi{padding:0}
 @media(max-width:700px){.education{grid-template-columns:80px minmax(0,1fr);gap:15px}.education .institution-logo{width:80px;height:60px}}
-.school-logo-frame{width:100px;height:80px;overflow:hidden;display:flex;align-items:center;justify-content:center}.school-logo-frame .institution-logo.sustech{transform:scale(1.85);flex-shrink:0}
-@media(max-width:700px){.school-logo-frame{width:80px;height:64px}}
+.school-logo-frame{width:100px;height:80px;overflow:hidden;display:flex;align-items:center;justify-content:center}.school-logo-frame .institution-logo.ucsd,.school-logo-frame .institution-logo.sustech{width:76px;height:76px;object-fit:contain;flex-shrink:0}
+@media(max-width:700px){.school-logo-frame{width:80px;height:64px}.school-logo-frame .institution-logo.ucsd,.school-logo-frame .institution-logo.sustech{width:60px;height:60px}}
 
 /* Publication details and release dates */
 .paper-media{min-width:0}.paper-figure{line-height:0}.conference-label{z-index:1;line-height:1.5}.paper-date{color:#737d88;font-size:12px;line-height:1.6;margin:7px 0 0;text-align:center}.paper-contributions{font-size:14px;line-height:1.75;color:#566372;margin:12px 0;padding-left:18px}.paper-contributions li{padding-left:3px;margin:0 0 8px}.paper-contributions strong{font-weight:600;color:#344c64}@media(max-width:480px){.paper-media{max-width:300px}}
