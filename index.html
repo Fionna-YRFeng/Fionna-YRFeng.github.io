@@ -1,39 +1,419 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yuru Feng | AI Agent Research</title>
-<meta name="description" content="Yuru Feng — Master's student in Data Science at UC San Diego and research intern at Microsoft Research Asia. Research on autonomous agents, memory systems, and self-evolution.">
-<meta name="theme-color" content="#173e65"><link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yuru Feng</title>
+<meta name="description" content="Yuru Feng is an M.S. Data Science student at UC San Diego working on self-evolving LLM agents: agent memory (PrisMem) and agent skills (SkillHEX).">
+<meta property="og:title" content="Yuru Feng">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #07080B; --surface: #181B24; --text: #ECEDF2; --muted: #9A9DAA;
+    --line: #22242D; --link: #8FB4E8; --mark: #12141B;
+    --spectrum: linear-gradient(90deg, #22B8E6, #5B7BFF, #9A6BFF, #F25CC4, #F5B04C);
+    --sans: "IBM Plex Sans", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --serif: "Newsreader", "Songti SC", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans);
+         font-size: 16.5px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; border-radius: 4px; }
+  .wrap { width: min(780px, 100% - 40px); margin-inline: auto; }
+
+  /* nav */
+  .nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 85%, transparent);
+         backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+  .nav .brand { font-family: var(--serif); font-weight: 600; font-size: 19px; color: var(--text); }
+  .nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
+  .nav li a { color: var(--muted); font-size: 15px; }
+  .nav li a:hover { color: var(--text); text-decoration: none; }
+
+  /* intro */
+  .intro { padding: 56px 0 8px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(38px, 6vw, 52px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+  .rule { height: 3px; width: 120px; background: var(--spectrum); border-radius: 3px; margin: 16px 0 18px; }
+  .social { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 0 0 30px; }
+  .social a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+              background: var(--surface); color: var(--muted); transition: background .2s, color .2s, transform .2s; }
+  .social a:hover { background: #223249; color: var(--text); transform: translateY(-2px); text-decoration: none; }
+  .social svg { width: 22px; height: 22px; }
+  .bio::after { content: ""; display: block; clear: both; }
+  .portrait { float: right; width: 168px; aspect-ratio: 1; margin: 4px 0 16px 28px; border-radius: 14px; overflow: hidden;
+              position: relative; background: var(--mark); display: grid; place-items: center;
+              font-family: var(--serif); font-size: 52px; color: var(--muted); }
+  .portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .bio p { margin: 0 0 16px; }
+
+  /* sections */
+  section { padding: 44px 0 0; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: 28px; margin: 0 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  h3.group { font-size: 15px; font-weight: 600; color: var(--muted); margin: 30px 0 4px; }
+  .note { color: var(--muted); margin: -6px 0 18px; font-size: 15.5px; }
+
+  /* news */
+  .news { list-style: none; margin: 0; padding: 0; }
+  .news li { display: grid; grid-template-columns: 84px 26px 1fr; gap: 6px; padding: 9px 0; }
+  .news a { text-decoration: underline; text-underline-offset: 3px; }
+  .news time { color: var(--muted); font-size: 14.5px; font-variant-numeric: tabular-nums; padding-top: 2px; }
+
+  /* Highlight work: native horizontal scroll with a gently fanned card layout. */
+  .carousel { --card-width: min(646px, 76%); position: relative; }
+  .stage { display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
+    gap: 20px; overflow-x: auto; overflow-y: hidden; padding: 26px calc((100% - var(--card-width)) / 2) 30px;
+    margin: 0; list-style: none; scroll-snap-type: x mandatory; scrollbar-width: none;
+    overscroll-behavior-x: contain; cursor: grab; outline-offset: -3px; }
+  .stage::-webkit-scrollbar { display: none; }
+  .stage.dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+  .slide { min-width: 0; background: var(--surface); border-radius: 18px; overflow: hidden;
+    display: flex; flex-direction: column; scroll-snap-align: center;
+    transform-origin: 50% 130%; will-change: transform, opacity; }
+  .cover { aspect-ratio: 21 / 9; flex: none; background: #fff; display: grid; place-items: center; padding: 18px; }
+  .cover img { width: 100%; height: 100%; object-fit: contain; }
+  .cover span { font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 7vw, 56px);
+    background: var(--spectrum); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .slide .body { padding: 19px 24px 21px; flex: 1; display: flex; flex-direction: column; }
+  .venue { color: var(--link); font-size: 12px; font-weight: 600; letter-spacing: .065em; text-transform: uppercase; margin: 0 0 7px; }
+  .slide h3 { font-size: 19px; font-weight: 600; line-height: 1.35; margin: 0 0 10px; }
+  .slide p.sum { margin: 0 0 15px; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
+  .icons { display: flex; gap: 13px; margin-top: auto; }
+  .icons a { color: var(--muted); display: inline-flex; padding: 3px; border-radius: 50%; transition: color .2s, transform .2s; }
+  .icons a:hover { color: var(--link); transform: translateY(-2px); }
+  .icons svg { width: 20px; height: 20px; }
+  .ctrl { display: flex; gap: 14px; justify-content: center; align-items: center; margin-top: 8px; }
+  .ctrl button.arrow { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: background .2s, color .2s; }
+  .ctrl button.arrow:hover { background: #223249; color: var(--link); }
+  .ctrl button.arrow:disabled { opacity: .35; cursor: default; }
+  .ctrl svg { width: 16px; height: 16px; }
+  .dots { display: flex; gap: 1px; align-items: center; }
+  .dots button { display: grid; place-items: center; width: 16px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .dots button::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #3A3D4A; transition: transform .2s, background .2s; }
+  .dots button[aria-current="true"]::after { background: var(--link); transform: scale(1.3); }
+  .carousel-status { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @media (max-width: 600px) { .carousel { --card-width: 88%; } .stage { gap: 14px; } }
+  @media (prefers-reduced-motion: reduce) { .slide { transform: none !important; } .social a, .icons a, .ctrl button, .dots button::after { transition: none; } }
+
+  /* publications */
+  .pub { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .pub:last-of-type { border-bottom: 0; }
+  .pub h4 { font-size: 17.5px; font-weight: 600; line-height: 1.4; margin: 0 0 4px; }
+  .pub p { margin: 0 0 6px; font-size: 15.5px; }
+  .pub .meta { color: var(--muted); }
+  .pub .meta b, .pub .authors b { color: var(--text); font-weight: 600; }
+  .pub .authors b { text-decoration: underline; text-underline-offset: 3px; }
+  .pub .authors sup { line-height: 0; }
+  .pub .tldr { background: var(--mark); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+
+  /* experience */
+  .xp { list-style: none; margin: 0; padding: 0; }
+  .xp li { display: grid; grid-template-columns: 150px 144px 1fr; gap: 18px; padding: 16px 0; align-items: start; }
+  .xp .logo { display: grid; place-items: center; width: 144px; aspect-ratio: 16 / 9; padding: 12px; border-radius: 12px; background: #fff; }
+  .xp .logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .xp time { color: var(--muted); font-size: 14.5px; padding-top: 2px; }
+  .xp b { font-weight: 600; }
+  .xp .org { display: block; font-size: 15.5px; margin-top: 1px; }
+  .xp p { margin: 2px 0 0; color: var(--muted); font-size: 15.5px; }
+
+  footer { margin-top: 64px; border-top: 1px solid var(--line); padding: 26px 0 40px; color: var(--muted); font-size: 14px; }
+  footer .social { margin-bottom: 14px; }
+
+  @media (max-width: 600px) {
+    .portrait { float: none; margin: 0 0 20px; width: 132px; }
+    .news li { grid-template-columns: 70px 24px 1fr; }
+    .xp li { grid-template-columns: 112px 1fr; gap: 6px 14px; }
+    .xp .logo { width: 112px; padding: 9px; }
+    .xp time { grid-column: 1 / -1; }
+    .nav ul { gap: 14px; }
+    .slide .body { padding: 18px 18px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header><div class="topbar"><a class="brand" href="#about">Yuru Feng<span> / Homepage</span></a><nav aria-label="Main navigation"><a href="#about">About</a><a href="#publications">Publications</a><a href="#experience">Internships</a><a href="#education">Education</a></nav></div></header>
-<div class="layout">
-<aside class="profile" aria-label="Profile">
-<img class="portrait" src="assets/yuru-feng.jpg" width="160" height="160" alt="Yuru Feng">
-<h1>Yuru Feng</h1><p class="role">Master's Student in Data Science</p><p class="affiliation">University of California,<br>San Diego</p>
-<div class="profile-rule"></div>
-<p class="side-label">CURRENT RESEARCH</p><p class="research-role">Research Intern<br><strong>Microsoft Research Asia</strong></p>
-<div class="contact"><a href="mailto:yuf043@ucsd.edu"><span aria-hidden="true">✉</span> yuf043@ucsd.edu</a><a href="https://scholar.google.com/yurufeng" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Google Scholar</a></div>
-<a class="cv" href="Resume.pdf" target="_blank" rel="noopener">View CV <span aria-hidden="true">↗</span></a>
-</aside>
-<main id="main">
-<section id="about" class="about"><div class="section-kicker">ABOUT ME</div><h2>Building agents that<br><em>remember and improve.</em></h2>
-<p>I am a master's student in <strong>Data Science at UC San Diego</strong> and a research intern in the <strong>AI Memory Systems Group at Microsoft Research Asia</strong>, where I work with <a href="https://www.microsoft.com/en-us/research/people/qiazh/" target="_blank" rel="noopener noreferrer">Qianxi Zhang</a> and <a href="https://www.microsoft.com/en-us/research/people/cheqi/" target="_blank" rel="noopener noreferrer">Qi Chen</a>. Previously, I received my B.S. in Data Science and Big Data Technology from Southern University of Science and Technology (SUSTech).</p>
-<p>My research asks how we can build <strong>autonomous agents that learn from experience and remain reliable over long horizons</strong>. I approach this through two connected problems: <strong>memory</strong>, which must preserve the dependencies and validity of an evolving execution state, and <strong>self-evolution</strong>, which must turn sparse, ambiguous feedback into meaningful changes in behavior. My work explores structured memory, task-adaptive evidence selection, and hypothesis-driven exploration to help agents diagnose failures, test alternatives, and retain useful progress. I am particularly interested in the interaction between reasoning, memory, and learning: how an agent decides what to recall, what to question, and what to change as a task unfolds. My long-term goal is to develop agents that can continually adapt through interaction while keeping their decisions grounded in evidence and their computational costs manageable.</p>
-<div class="interests" aria-label="Research interests"><span>Agent Memory</span><span>Self Evolve</span><span>Large Language Models</span></div>
-</section>
-<section id="publications"><div class="section-heading"><h2>Selected Publications</h2></div>
-<article class="paper"><div class="paper-media"><a class="paper-figure" href="assets/mesa.png" target="_blank" rel="noopener" aria-label="View MESA framework image"><img src="assets/mesa.png" alt="MESA task-adaptive memory structure selection framework" loading="lazy" width="440" height="240"><span class="conference-label">Under review</span></a><p class="paper-date"><time datetime="2026-08-10">Aug. 10, 2026</time></p></div><div class="paper-content"><h3><a href="https://arxiv.org/abs/2608.10108" target="_blank" rel="noopener noreferrer">MESA: Task-Adaptive Multi-Structure Evidence Selection for Long-Horizon Agent Memory</a></h3><p class="authors">Beidi Zhao, Yaoqi Chen, <strong>Yuru Feng</strong>, Menghao Li, Qianxi Zhang, Baotong Lu, Jianan Lu, Zhirui Wang, Xinjiang Wang, Shusen Xu, Zengzhong Li, Xiaoxiao Li, Qi Chen</p><ul class="paper-contributions"><li><strong>Complementary views of experience:</strong> Different memory structures expose different evidence; the useful combination depends on the question being asked.</li><li><strong>Learning what to recall:</strong> Memory access can be learned from answer quality, allowing an agent to select complementary evidence instead of always reading everything or relying on one structure.</li></ul><a class="paper-link" href="https://arxiv.org/abs/2608.10108" target="_blank" rel="noopener noreferrer">arXiv <span aria-hidden="true">↗</span></a></div></article>
-<article class="paper"><div class="paper-media"><a class="paper-figure" href="assets/skillhex.png" target="_blank" rel="noopener" aria-label="View SKILLHEX framework image"><img src="assets/skillhex.png" alt="SkillHEX framework: hypothesis-driven self-verification and evidence-guided tree search" loading="lazy" width="440" height="240"><span class="conference-label">Under review</span></a><p class="paper-date"><time datetime="2026-08-06">Aug. 6, 2026</time></p></div><div class="paper-content"><div class="paper-meta"><span>First author</span></div><h3><a href="https://arxiv.org/abs/2608.05628" target="_blank" rel="noopener noreferrer">SkillHEX: Improving Agent Skills via Hypothesis-Driven Autonomous Exploration and Exploitation</a></h3><p class="authors"><strong>Yuru Feng</strong>, Yaoqi Chen, Beidi Zhao, Qianxi Zhang, Xinjiang Wang, Jianan Lu, Zhirui Wang, Shusen Xu, Zengzhong Li, Qi Chen</p><ul class="paper-contributions"><li><strong>Diagnosis before refinement:</strong> Sparse feedback can conceal different failure causes. Skill evolution should begin by testing competing explanations for what went wrong.</li><li><strong>Exploration without premature commitment:</strong> Preserving alternative revision paths lets an agent challenge an early diagnosis and use evidence to decide which direction to pursue.</li></ul><a class="paper-link" href="https://arxiv.org/abs/2608.05628" target="_blank" rel="noopener noreferrer">arXiv <span aria-hidden="true">↗</span></a></div></article>
-<article class="paper"><div class="paper-media"><a class="paper-figure" href="assets/mage.png" target="_blank" rel="noopener" aria-label="View MAGE framework image"><img src="assets/mage.png" alt="MAGE hierarchical execution-state memory framework" loading="lazy" width="440" height="240"><span class="conference-label">EMNLP 2026</span></a><p class="paper-date"><time datetime="2026-06-04">Jun. 4, 2026</time></p></div><div class="paper-content"><h3><a href="https://arxiv.org/abs/2606.06090" target="_blank" rel="noopener noreferrer">Beyond Semantic Organization: Memory as Execution State Management for Long-Horizon Agents</a></h3><p class="authors">Yaoqi Chen, Haibin Lai, <strong>Yuru Feng</strong>, Chuyu Han, Qianxi Zhang, Baotong Lu, Menghao Li, Xinjiang Wang, Zewen Jin, Hao Wu, Cheng Li, Qi Chen</p><ul class="paper-contributions"><li><strong>Memory as execution state:</strong> Long-horizon agents need memory that preserves task dependencies and distinguishes valid progress from failed attempts, beyond semantic relevance alone.</li><li><strong>Recovery as a memory capability:</strong> Memory should support revising an agent’s course of action while retaining unaffected progress, making error recovery part of its design.</li></ul><a class="paper-link" href="https://arxiv.org/abs/2606.06090" target="_blank" rel="noopener noreferrer">arXiv <span aria-hidden="true">↗</span></a></div></article>
-</section>
-<section id="experience"><div class="section-heading"><h2>Internships</h2></div>
-<article class="experience"><img class="institution-logo microsoft" src="assets/microsoft.svg" alt="Microsoft logo" width="64" height="64" loading="lazy"><div class="experience-body"><div class="entry-top"><h3>Microsoft Research Asia</h3><span class="date">Mar. 2026 — Present</span></div><p class="entry-sub">Research Intern · AI Memory Systems Group</p><ul><li>Led research on self-evolving agent skills, improving task performance by <strong>9.5 percentage points</strong> while reducing token consumption by <strong>18%</strong>.</li><li>Co-developed hierarchical execution-state memory, improving task success by <strong>7.8–20.4 percentage points</strong> and reducing token usage by <strong>55.1%</strong> versus full-context methods.</li><li>Contributed to structure-level memory selection, improving performance by <strong>8.5 percentage points</strong> over the strongest baseline while reducing token consumption by <strong>41%</strong>.</li></ul></div></article>
-<article class="experience"><img class="institution-logo mgi" src="assets/mgi.png" alt="MGI Tech logo" width="64" height="64" loading="lazy"><div class="experience-body"><div class="entry-top"><h3>MGI Tech Co., Ltd.</h3><span class="date">Mar. 2025 — Aug. 2025</span></div><p class="entry-sub">Artificial Intelligence Engineer Intern · Frontier Technology R&D X Center</p><ul><li>Developed a biomedical LLM post-training pipeline using DeepSeek-R1 reasoning-data distillation, LoRA fine-tuning, and GRPO, alongside a LangGraph multi-agent workflow with human-in-the-loop prompt optimization.</li><li>Designed a RAG and knowledge-graph pipeline spanning VLM/OCR parsing, semantics-aware chunking, structured retrieval, evidence tracing, and multi-hop reasoning. Improved core product metrics by <strong>7.5%</strong> while reducing the cost of standard GraphRAG-based solutions.</li></ul></div></article></section>
-<section id="education"><div class="section-heading"><h2>Education</h2></div><article class="education"><div class="school-logo-frame"><img class="institution-logo ucsd" src="assets/ucsd-seal.svg" alt="University of California, San Diego seal" width="80" height="80" loading="lazy"></div><div><div class="entry-top"><h3>University of California, San Diego</h3><span class="date">2025 — 2027</span></div><p>Master of Data Science</p><p class="detail">Sep. 2025 — Jun. 2027 (expected) · San Diego, CA</p></div></article><article class="education"><div class="school-logo-frame"><img class="institution-logo sustech" src="assets/sustech-seal.png" alt="Southern University of Science and Technology seal" width="80" height="80" loading="lazy"></div><div><div class="entry-top"><h3>Southern University of Science and Technology</h3><span class="date">2021 — 2025</span></div><p>B.S. in Data Science and Big Data Technology</p><p class="detail">Sep. 2021 — Jun. 2025 · Shenzhen, China</p></div></article></section>
-<section id="awards"><div class="section-heading"><h2>Honors & Awards</h2></div><div class="award"><span>2025</span><p>Excellent Graduates of Southern University of Science and Technology</p></div><div class="award"><span>2024</span><p>Outstanding Student Scholarship, Zhiren College, SUSTech</p></div><div class="award"><span>2023</span><p>Excellence in Student Leadership Award, SUSTech</p></div></section>
-<footer><span>© 2026 Yuru Feng</span><a href="#about">Back to top ↑</a></footer>
-</main></div><script src="script.js"></script>
-</body></html>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">Yuru Feng</a>
+    <ul>
+      <li><a href="#top">About</a></li>
+      <li><a href="#highlights">Highlights</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#experience">Experience</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+
+  <header class="intro">
+    <h1>Yuru Feng</h1>
+    <div class="rule"></div>
+    <ul class="social">
+      <li><a href="https://scholar.google.com/citations?user=zmsnWIcAAAAJ&amp;hl=en" title="Google Scholar" aria-label="Google Scholar"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.242 13.769 0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269M12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14"/></svg></a></li>
+      <li><a href="https://orcid.org/0009-0009-2313-2990" title="ORCID" aria-label="ORCID"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0M7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947m-.722 3.038h1.444v10.041H6.647zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722z"/></svg></a></li>
+      <li><a href="https://github.com/Fionna-YRFeng" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></li>
+      <li><a href="https://huggingface.co/fyr2688" title="Hugging Face" aria-label="Hugging Face"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.025 1.13c-5.77 0-10.449 4.647-10.449 10.378 0 1.112.178 2.181.503 3.185.064-.222.203-.444.416-.577a.96.96 0 0 1 .524-.15c.293 0 .584.124.84.284.278.173.48.408.71.694.226.282.458.611.684.951v-.014c.017-.324.106-.622.264-.874s.403-.487.762-.543c.3-.047.596.06.787.203s.31.313.4.467c.15.257.212.468.233.542.01.026.653 1.552 1.657 2.54.616.605 1.01 1.223 1.082 1.912.055.537-.096 1.059-.38 1.572.637.121 1.294.187 1.967.187.657 0 1.298-.063 1.921-.178-.287-.517-.44-1.041-.384-1.581.07-.69.465-1.307 1.081-1.913 1.004-.987 1.647-2.513 1.657-2.539.021-.074.083-.285.233-.542.09-.154.208-.323.4-.467a1.08 1.08 0 0 1 .787-.203c.359.056.604.29.762.543s.247.55.265.874v.015c.225-.34.457-.67.683-.952.23-.286.432-.52.71-.694.257-.16.547-.284.84-.285a.97.97 0 0 1 .524.151c.228.143.373.388.43.625l.006.04a10.3 10.3 0 0 0 .534-3.273c0-5.731-4.678-10.378-10.449-10.378M8.327 6.583a1.5 1.5 0 0 1 .713.174 1.487 1.487 0 0 1 .617 2.013c-.183.343-.762-.214-1.102-.094-.38.134-.532.914-.917.71a1.487 1.487 0 0 1 .69-2.803m7.486 0a1.487 1.487 0 0 1 .689 2.803c-.385.204-.536-.576-.916-.71-.34-.12-.92.437-1.103.094a1.487 1.487 0 0 1 .617-2.013 1.5 1.5 0 0 1 .713-.174m-10.68 1.55a.96.96 0 1 1 0 1.921.96.96 0 0 1 0-1.92m13.838 0a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M8.489 11.458c.588.01 1.965 1.157 3.572 1.164 1.607-.007 2.984-1.155 3.572-1.164.196-.003.305.12.305.454 0 .886-.424 2.328-1.563 3.202-.22-.756-1.396-1.366-1.63-1.32q-.011.001-.02.006l-.044.026-.01.008-.03.024q-.018.017-.035.036l-.032.04a1 1 0 0 0-.058.09l-.014.025q-.049.088-.11.19a1 1 0 0 1-.083.116 1.2 1.2 0 0 1-.173.18q-.035.029-.075.058a1.3 1.3 0 0 1-.251-.243 1 1 0 0 1-.076-.107c-.124-.193-.177-.363-.337-.444-.034-.016-.104-.008-.2.022q-.094.03-.216.087-.06.028-.125.063l-.13.074q-.067.04-.136.086a3 3 0 0 0-.135.096 3 3 0 0 0-.26.219 2 2 0 0 0-.12.121 2 2 0 0 0-.106.128l-.002.002a2 2 0 0 0-.09.132l-.001.001a1.2 1.2 0 0 0-.105.212q-.013.036-.024.073c-1.139-.875-1.563-2.317-1.563-3.203 0-.334.109-.457.305-.454m.836 10.354c.824-1.19.766-2.082-.365-3.194-1.13-1.112-1.789-2.738-1.789-2.738s-.246-.945-.806-.858-.97 1.499.202 2.362c1.173.864-.233 1.45-.685.64-.45-.812-1.683-2.896-2.322-3.295s-1.089-.175-.938.647 2.822 2.813 2.562 3.244-1.176-.506-1.176-.506-2.866-2.567-3.49-1.898.473 1.23 2.037 2.16c1.564.932 1.686 1.178 1.464 1.53s-3.675-2.511-4-1.297c-.323 1.214 3.524 1.567 3.287 2.405-.238.839-2.71-1.587-3.216-.642-.506.946 3.49 2.056 3.522 2.064 1.29.33 4.568 1.028 5.713-.624m5.349 0c-.824-1.19-.766-2.082.365-3.194 1.13-1.112 1.789-2.738 1.789-2.738s.246-.945.806-.858.97 1.499-.202 2.362c-1.173.864.233 1.45.685.64.451-.812 1.683-2.896 2.322-3.295s1.089-.175.938.647-2.822 2.813-2.562 3.244 1.176-.506 1.176-.506 2.866-2.567 3.49-1.898-.473 1.23-2.037 2.16c-1.564.932-1.686 1.178-1.464 1.53s3.675-2.511 4-1.297c.323 1.214-3.524 1.567-3.287 2.405.238.839 2.71-1.587 3.216-.642.506.946-3.49 2.056-3.522 2.064-1.29.33-4.568 1.028-5.713-.624"/></svg></a></li>
+      <li><a href="mailto:yuf043@ucsd.edu" title="Email" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0-8 5-8-5zm0 12H4V8l8 5 8-5z"/></svg></a></li>
+    </ul>
+
+    <div class="bio">
+      <div class="portrait">YF<img src="photo.jpg" alt="Portrait of Yuru Feng" onerror="this.remove()"></div>
+
+      <p>Welcome to my Homepage! 👋</p>
+
+      <p>I am an M.S. student in Data Science at <a href="https://ucsd.edu/">UC San Diego</a>. I received my B.S. in Data Science and Big Data Technology from <a href="https://www.sustech.edu.cn/en/">Southern University of Science and Technology</a> in 2025. From March to September 2026 I was a research intern in the AI Memory Systems Team at <a href="https://www.microsoft.com/en-us/research/lab/microsoft-research-asia/">Microsoft Research Asia</a>, starting my research on AI memory and Recursive self-improvement (RSI) under the supervision of <a href="https://www.microsoft.com/en-us/research/people/qiazh/">Qianxi Zhang</a> and <a href="https://www.microsoft.com/en-us/research/people/cheqi/">Qi Chen</a>.</p>
+
+      <p>My research interest is <b>understanding and optimizing agentic AI systems</b> (e.g., long-term memory and self-evolving agents). I am interested in how to maximize agents' capabilities from their own experience at test time adaptation: <a href="[https://arxiv.org/abs/2610.06361](https://arxiv.org/abs/2610.06361)">PRISMEM</a> guides memory program evolution through explicit capability dimensions rather than a single aggregate score. <a href="https://arxiv.org/abs/2608.05628">SkillHEX</a> evolves agent skills at test time through hypothesis-driven exploration and exploitation. I also work on how long-horizon agents should organize what they remember: <a href="https://arxiv.org/abs/2608.10108">MESA</a> selects the right memory structures for each query, and <a href="https://arxiv.org/abs/2606.06090">MAGE</a> treats memory as execution state instead of a pool of similar facts. Recently, I am exploring the intersection of AI for Games and World Models, focusing on how memory architectures can preserve long-horizon consistency to drive more coherent, robust, and self-evolving agent dynamics through Recursive Self-Improvement (RSI).</p> 
+    </div>
+  </header>
+
+  <section id="news">
+    <h2>News</h2>
+    <ol class="news">
+      <!-- EDIT: add acceptances, talks and new preprints at the top -->
+      <li><time>Sep 2026</time><span>📄</span><span>Excited to share our new paper: <a href="https://arxiv.org/abs/2610.06361">Capability-Driven Self-Evolution of Agent Memory</a>!</span></li>
+      <li><time>Aug 2026</time><span>🎉</span><span>Our paper <a href="https://arxiv.org/abs/2606.06090">Beyond Semantic Organization: Memory as Execution State Management for Long-Horizon Agents</a> has been accepted to EMNLP 2026!</span></li>
+      <li><time>Aug 2026</time><span>📄</span><span>Excited to share our new papers: <a href="https://arxiv.org/abs/2608.05628">SkillHEX: Improving Agent Skills via Hypothesis-Driven Autonomous Exploration and Exploitation</a> and <a href="https://arxiv.org/abs/2608.10108">MESA: Task-Adaptive Multi-Structure Evidence Selection for Long-Horizon Agent Memory</a>!</span></li>
+      <li><time>Jun 2026</time><span>📄</span><span>Excited to share our new paper: <a href="https://arxiv.org/abs/2606.06090">Beyond Semantic Organization: Memory as Execution State Management for Long-Horizon Agents</a>!</span></li>
+      <li><time>Mar 2026</time><span>💼</span><span>Excited to join Microsoft Research Asia (MSRA) as a Research Intern in the AI Memory Systems Team! 🚀</span></li>
+    </ol>
+  </section>
+
+  <section id="highlights">
+    <h2>Highlight Work</h2>
+    <p class="note">A swipeable tour of selected work. The <a href="#publications">full publication list</a> follows below.</p>
+    <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Highlight work">
+      <ul class="stage" id="stage" tabindex="0" aria-label="Selected work; use left and right arrow keys to browse">
+        <li class="slide">
+          <!-- EDIT: add a code link next to arXiv when the repo is public -->
+          <div class="cover"><img src="covers/prismem.png" alt="PrisMem method overview: cold-start, capability-driven evolution and integration"></div>
+          <div class="body">
+            <p class="venue">arXiv 2026 · Microsoft Research Asia</p>
+            <h3>Capability-Driven Self-Evolution of Agent Memory</h3>
+            <p class="sum">Memory self-evolution is usually steered by one overall score, which hides gains on one capability that are cancelled by regressions elsewhere. PrisMem splits the search into capability-specific directions, like a prism separating light: it chooses which capability to target from the dependencies between them, and uses the evolution history to diagnose and refine each capability specialist.</p>
+            <div class="icons"><a href="https://arxiv.org/abs/2610.06361" title="arXiv" aria-label="arXiv"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.842 0a1 1 0 0 0-.922.608c-.153.369-.044.627.294 1.111l6.919 8.36-1.023 1.106a1.04 1.04 0 0 0 .003 1.423l1.23 1.313-5.44 6.444c-.28.3-.453.823-.297 1.199a1.025 1.025 0 0 0 .959.635.91.91 0 0 0 .689-.34l5.783-6.126 7.49 8.005a.85.85 0 0 0 .684.26.96.96 0 0 0 .877-.615c.158-.377-.017-.75-.306-1.14L13.73 13.9l1.064-1.13a.963.963 0 0 0 .009-1.316L4.633.464S4.26.01 3.867 0zm0 .272h.017c.218.005.487.272.564.364l.005.006.005.005 10.17 10.99a.69.69 0 0 1-.008.946l-1.066 1.133-1.498-1.772-8.6-10.39c-.328-.472-.352-.619-.26-.841a.73.73 0 0 1 .671-.44Zm14.341 1.57a.88.88 0 0 0-.655.242l-5.696 6.158 1.694 1.832 5.309-6.514c.325-.433.479-.66.325-1.029a1.12 1.12 0 0 0-.977-.689zm-7.655 12.282 1.318 1.414-5.786 6.13a.65.65 0 0 1-.496.26.75.75 0 0 1-.706-.467c-.112-.269.036-.687.244-.909l.005-.005.005-.006z"/></svg></a><a href="https://fionna-yrfeng.github.io/PrisMem/" title="Project page" aria-label="Project page"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg></a></div>
+          </div>
+        </li>
+        <li class="slide">
+          <!-- EDIT: add a code link next to arXiv when the repo is public -->
+          <div class="cover"><img src="covers/skillhex.png" alt="SkillHEX method overview: reflection, self-verifier, evidence bank and skill patch tree"></div>
+          <div class="body">
+            <p class="venue">arXiv 2026 · Microsoft Research Asia</p>
+            <h3>SkillHEX: Improving Agent Skills via Hypothesis-Driven Autonomous Exploration and Exploitation</h3>
+            <p class="sum">Agent skills often have to be improved at test time with a few trials and only pass or fail feedback, so greedy refinement can spend its whole budget on an early misdiagnosis. SkillHEX pairs a hypothesis-driven self-verifier with an evidence-guided search over a tree of skill revisions. On 87 SkillsBench tasks it reaches average pass rates of 55.9% with GPT-5.3-Codex and 57.9% with Claude Opus 4.7 within five iterations.</p>
+            <div class="icons"><a href="https://arxiv.org/abs/2608.05628" title="arXiv" aria-label="arXiv"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.842 0a1 1 0 0 0-.922.608c-.153.369-.044.627.294 1.111l6.919 8.36-1.023 1.106a1.04 1.04 0 0 0 .003 1.423l1.23 1.313-5.44 6.444c-.28.3-.453.823-.297 1.199a1.025 1.025 0 0 0 .959.635.91.91 0 0 0 .689-.34l5.783-6.126 7.49 8.005a.85.85 0 0 0 .684.26.96.96 0 0 0 .877-.615c.158-.377-.017-.75-.306-1.14L13.73 13.9l1.064-1.13a.963.963 0 0 0 .009-1.316L4.633.464S4.26.01 3.867 0zm0 .272h.017c.218.005.487.272.564.364l.005.006.005.005 10.17 10.99a.69.69 0 0 1-.008.946l-1.066 1.133-1.498-1.772-8.6-10.39c-.328-.472-.352-.619-.26-.841a.73.73 0 0 1 .671-.44Zm14.341 1.57a.88.88 0 0 0-.655.242l-5.696 6.158 1.694 1.832 5.309-6.514c.325-.433.479-.66.325-1.029a1.12 1.12 0 0 0-.977-.689zm-7.655 12.282 1.318 1.414-5.786 6.13a.65.65 0 0 1-.496.26.75.75 0 0 1-.706-.467c-.112-.269.036-.687.244-.909l.005-.005.005-.006z"/></svg></a></div>
+          </div>
+        </li>
+        <li class="slide">
+          <!-- EDIT: add a code link next to arXiv when the repo is public -->
+          <div class="cover"><img src="covers/mage.png" alt="MAGE method overview: a two-layer execution-state tree with Grow, Compress, Maintain and Revise"></div>
+          <div class="body">
+            <p class="venue">EMNLP 2026 · Microsoft Research Asia</p>
+            <h3>Beyond Semantic Organization: Memory as Execution State Management for Long-Horizon Agents</h3>
+            <p class="sum">Memory organized by semantic similarity fragments the chain of decisions an agent has made and mixes valid traces with failed ones. MAGE stores the interaction history as a two-layer state tree and maintains it with four operations: Grow, Compress, Maintain and Revise. On MemoryArena it raises average task success by 7.8 to 20.4 points over baselines and uses 55.1% fewer tokens than keeping the full history in context.</p>
+            <div class="icons"><a href="https://arxiv.org/abs/2606.06090" title="arXiv" aria-label="arXiv"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.842 0a1 1 0 0 0-.922.608c-.153.369-.044.627.294 1.111l6.919 8.36-1.023 1.106a1.04 1.04 0 0 0 .003 1.423l1.23 1.313-5.44 6.444c-.28.3-.453.823-.297 1.199a1.025 1.025 0 0 0 .959.635.91.91 0 0 0 .689-.34l5.783-6.126 7.49 8.005a.85.85 0 0 0 .684.26.96.96 0 0 0 .877-.615c.158-.377-.017-.75-.306-1.14L13.73 13.9l1.064-1.13a.963.963 0 0 0 .009-1.316L4.633.464S4.26.01 3.867 0zm0 .272h.017c.218.005.487.272.564.364l.005.006.005.005 10.17 10.99a.69.69 0 0 1-.008.946l-1.066 1.133-1.498-1.772-8.6-10.39c-.328-.472-.352-.619-.26-.841a.73.73 0 0 1 .671-.44Zm14.341 1.57a.88.88 0 0 0-.655.242l-5.696 6.158 1.694 1.832 5.309-6.514c.325-.433.479-.66.325-1.029a1.12 1.12 0 0 0-.977-.689zm-7.655 12.282 1.318 1.414-5.786 6.13a.65.65 0 0 1-.496.26.75.75 0 0 1-.706-.467c-.112-.269.036-.687.244-.909l.005-.005.005-.006z"/></svg></a></div>
+          </div>
+        </li>
+      </ul>
+      <p class="carousel-status" id="carousel-status" aria-live="polite" aria-atomic="true"></p>
+      <div class="ctrl">
+        <button type="button" class="arrow" id="prev" aria-label="Previous highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="dots" id="dots"></div>
+        <button type="button" class="arrow" id="next" aria-label="Next highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications">
+    <h2>Publications</h2>
+    <p class="note">Also on <a href="https://scholar.google.com/citations?user=zmsnWIcAAAAJ&amp;hl=en">Google Scholar</a>. * denotes equal contribution.</p>
+
+    <article class="pub">
+      <h4>Capability-Driven Self-Evolution of Agent Memory</h4>
+      <p class="authors">Yaoqi Chen<sup>*</sup>, <b>Yuru Feng</b><sup>*</sup>, Qianxi Zhang, Baotong Lu, Jianan Lu, Zhirui Wang, Shusen Xu, Zewen Jin, Zengzhong Li, Cheng Li, Qi Chen</p>
+      <p class="meta"><i>arXiv preprint, 2026</i> · <a href="https://arxiv.org/abs/2610.06361">arXiv</a> · <a href="https://fionna-yrfeng.github.io/PrisMem/">project page</a></p>
+      <p class="tldr"><b>TL;DR:</b> Evolving memory programs around capabilities improves overall performance.</p>
+    </article>
+
+    <article class="pub">
+      <h4>SkillHEX: Improving Agent Skills via Hypothesis-Driven Autonomous Exploration and Exploitation</h4>
+      <p class="authors"><b>Yuru Feng</b>, Yaoqi Chen, Beidi Zhao, Qianxi Zhang, Xinjiang Wang, Jianan Lu, Zhirui Wang, Shusen Xu, Zengzhong Li, Qi Chen</p>
+      <p class="meta"><i>arXiv preprint, 2026</i> · <a href="https://arxiv.org/abs/2608.05628">arXiv</a></p>
+      <p class="tldr"><b>TL;DR:</b>SkillHEX enables autonomous agent skill evolution under sparse rewards and limited budgets by coupling hypothesis-driven self-verification with evidence-guided tree search to balance exploration and exploitation.</p>
+    </article>
+
+    <article class="pub">
+      <h4>Beyond Semantic Organization: Memory as Execution State Management for Long-Horizon Agents</h4>
+      <p class="authors">Yaoqi Chen, Haibin Lai, <b>Yuru Feng</b>, Chuyu Han, Qianxi Zhang, Baotong Lu, Menghao Li, Xinjiang Wang, Zhirui Wang, Shusen Xu, Zengzhong Li, Zewen Jin, Hao Wu, Cheng Li, Qi Chen</p>
+      <p class="meta"><i>EMNLP 2026</i> · <a href="https://arxiv.org/abs/2606.06090">arXiv</a></p>
+      <p class="tldr"><b>TL;DR:</b>We treat agent memory as an exploration state manager rather than a retrieval store, maintaining execution-state integrity and enabling selective error isolation for long-horizon LLM agents.</p>
+    </article>
+
+    <article class="pub">
+      <h4>MESA: Task-Adaptive Multi-Structure Evidence Selection for Long-Horizon Agent Memory</h4>
+      <p class="authors">Beidi Zhao, Yaoqi Chen, <b>Yuru Feng</b>, Menghao Li, Qianxi Zhang, Baotong Lu, Jianan Lu, Zhirui Wang, Xinjiang Wang, Shusen Xu, Zengzhong Li, Xiaoxiao Li, Qi Chen</p>
+      <p class="meta"><i>arXiv preprint, 2026</i> · <a href="https://arxiv.org/abs/2608.10108">arXiv</a></p>
+      <p class="tldr"><b>TL;DR:</b>MESA shows task-adaptive memory structure selection is essential for long-horizon agent memory and learns to select complementary memory structures via prior-guided harness optimization.</p>
+    </article>
+
+  </section>
+
+  <section id="experience">
+    <h2>Experience</h2>
+    <ul class="xp">
+      <li>
+        <time>Mar 2026 to Sep 2026</time>
+        <span class="logo"><img src="logos/microsoft.png" alt="Microsoft logo"></span>
+        <div><b>Research intern@Microsoft Research Asia</b>
+          <span class="org">AI Memory Systems Team</span>
+          <!-- <p>Agent memory and self-evolving agent skills. Led SkillHEX and PrisMem; co-authored MESA and MAGE.</p></div> -->
+      </li>
+      <li>
+        <time>Sep 2025 to Jun 2027</time>
+        <span class="logo"><img src="logos/ucsd.png" alt="UC San Diego logo"></span>
+        <div><b>M.S. Data Science</b>
+          <span class="org">UC San Diego</span>
+          <p>Expected June 2027.</p></div>
+      </li>
+      <li>
+        <time>Mar 2025 to Aug 2025</time>
+        <span class="logo"><img src="logos/mgi.png" alt="MGI logo"></span>
+        <div><b>AI engineer intern@MGI Tech</b>
+          <span class="org">Frontier Technology R&amp;D X Center</span>
+          <!-- <p>Deep-search agent for biomedical and genomics questions: RAG with a knowledge graph, GRPO fine-tuning, LangGraph prompt optimization.</p></div> -->
+      </li>
+      <li>
+        <time>Sep 2021 to Jun 2025</time>
+        <span class="logo"><img src="logos/sustech.png" alt="SUSTech logo"></span>
+        <div><b>B.S. Data Science and Big Data Technology</b>
+          <span class="org">Southern University of Science and Technology</span></div>
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="social">
+      <li><a href="https://scholar.google.com/citations?user=zmsnWIcAAAAJ&amp;hl=en" title="Google Scholar" aria-label="Google Scholar"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.242 13.769 0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269M12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14"/></svg></a></li>
+      <li><a href="https://orcid.org/0009-0009-2313-2990" title="ORCID" aria-label="ORCID"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0M7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947m-.722 3.038h1.444v10.041H6.647zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722z"/></svg></a></li>
+      <li><a href="https://github.com/Fionna-YRFeng" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></li>
+      <li><a href="https://huggingface.co/fyr2688" title="Hugging Face" aria-label="Hugging Face"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.025 1.13c-5.77 0-10.449 4.647-10.449 10.378 0 1.112.178 2.181.503 3.185.064-.222.203-.444.416-.577a.96.96 0 0 1 .524-.15c.293 0 .584.124.84.284.278.173.48.408.71.694.226.282.458.611.684.951v-.014c.017-.324.106-.622.264-.874s.403-.487.762-.543c.3-.047.596.06.787.203s.31.313.4.467c.15.257.212.468.233.542.01.026.653 1.552 1.657 2.54.616.605 1.01 1.223 1.082 1.912.055.537-.096 1.059-.38 1.572.637.121 1.294.187 1.967.187.657 0 1.298-.063 1.921-.178-.287-.517-.44-1.041-.384-1.581.07-.69.465-1.307 1.081-1.913 1.004-.987 1.647-2.513 1.657-2.539.021-.074.083-.285.233-.542.09-.154.208-.323.4-.467a1.08 1.08 0 0 1 .787-.203c.359.056.604.29.762.543s.247.55.265.874v.015c.225-.34.457-.67.683-.952.23-.286.432-.52.71-.694.257-.16.547-.284.84-.285a.97.97 0 0 1 .524.151c.228.143.373.388.43.625l.006.04a10.3 10.3 0 0 0 .534-3.273c0-5.731-4.678-10.378-10.449-10.378M8.327 6.583a1.5 1.5 0 0 1 .713.174 1.487 1.487 0 0 1 .617 2.013c-.183.343-.762-.214-1.102-.094-.38.134-.532.914-.917.71a1.487 1.487 0 0 1 .69-2.803m7.486 0a1.487 1.487 0 0 1 .689 2.803c-.385.204-.536-.576-.916-.71-.34-.12-.92.437-1.103.094a1.487 1.487 0 0 1 .617-2.013 1.5 1.5 0 0 1 .713-.174m-10.68 1.55a.96.96 0 1 1 0 1.921.96.96 0 0 1 0-1.92m13.838 0a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M8.489 11.458c.588.01 1.965 1.157 3.572 1.164 1.607-.007 2.984-1.155 3.572-1.164.196-.003.305.12.305.454 0 .886-.424 2.328-1.563 3.202-.22-.756-1.396-1.366-1.63-1.32q-.011.001-.02.006l-.044.026-.01.008-.03.024q-.018.017-.035.036l-.032.04a1 1 0 0 0-.058.09l-.014.025q-.049.088-.11.19a1 1 0 0 1-.083.116 1.2 1.2 0 0 1-.173.18q-.035.029-.075.058a1.3 1.3 0 0 1-.251-.243 1 1 0 0 1-.076-.107c-.124-.193-.177-.363-.337-.444-.034-.016-.104-.008-.2.022q-.094.03-.216.087-.06.028-.125.063l-.13.074q-.067.04-.136.086a3 3 0 0 0-.135.096 3 3 0 0 0-.26.219 2 2 0 0 0-.12.121 2 2 0 0 0-.106.128l-.002.002a2 2 0 0 0-.09.132l-.001.001a1.2 1.2 0 0 0-.105.212q-.013.036-.024.073c-1.139-.875-1.563-2.317-1.563-3.203 0-.334.109-.457.305-.454m.836 10.354c.824-1.19.766-2.082-.365-3.194-1.13-1.112-1.789-2.738-1.789-2.738s-.246-.945-.806-.858-.97 1.499.202 2.362c1.173.864-.233 1.45-.685.64-.45-.812-1.683-2.896-2.322-3.295s-1.089-.175-.938.647 2.822 2.813 2.562 3.244-1.176-.506-1.176-.506-2.866-2.567-3.49-1.898.473 1.23 2.037 2.16c1.564.932 1.686 1.178 1.464 1.53s-3.675-2.511-4-1.297c-.323 1.214 3.524 1.567 3.287 2.405-.238.839-2.71-1.587-3.216-.642-.506.946 3.49 2.056 3.522 2.064 1.29.33 4.568 1.028 5.713-.624m5.349 0c-.824-1.19-.766-2.082.365-3.194 1.13-1.112 1.789-2.738 1.789-2.738s.246-.945.806-.858.97 1.499-.202 2.362c-1.173.864.233 1.45.685.64.451-.812 1.683-2.896 2.322-3.295s1.089-.175.938.647-2.822 2.813-2.562 3.244 1.176-.506 1.176-.506 2.866-2.567 3.49-1.898-.473 1.23-2.037 2.16c-1.564.932-1.686 1.178-1.464 1.53s3.675-2.511 4-1.297c.323 1.214-3.524 1.567-3.287 2.405.238.839 2.71-1.587 3.216-.642.506.946-3.49 2.056-3.522 2.064-1.29.33-4.568 1.028-5.713-.624"/></svg></a></li>
+      <li><a href="mailto:yuf043@ucsd.edu" title="Email" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0-8 5-8-5zm0 12H4V8l8 5 8-5z"/></svg></a></li>
+    </ul>
+    © 2026 Yuru Feng
+  </div>
+</footer>
+
+<script>
+  (() => {
+    const stage = document.getElementById('stage');
+    const slides = [...stage.querySelectorAll('.slide')];
+    const prev = document.getElementById('prev'), next = document.getElementById('next');
+    const status = document.getElementById('carousel-status');
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    let active = 0, frame = 0, settleTimer, drag = null, suppressClick = false;
+    const clamp = n => Math.max(0, Math.min(slides.length - 1, n));
+    const dots = slides.map((slide, i) => {
+      slide.setAttribute('aria-roledescription', 'slide');
+      slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
+      const button = document.createElement('button');
+      button.type = 'button'; button.setAttribute('aria-label', `Go to highlight ${i + 1}`);
+      button.addEventListener('click', () => go(i));
+      document.getElementById('dots').append(button); return button;
+    });
+    // offsetLeft is unaffected by the decorative rotation and scaling.
+    const center = slide => slide.offsetLeft + slide.offsetWidth / 2;
+    const nearest = () => {
+      const midpoint = stage.scrollLeft + stage.clientWidth / 2;
+      return slides.reduce((best, slide, i) => Math.abs(center(slide) - midpoint) < Math.abs(center(slides[best]) - midpoint) ? i : best, 0);
+    };
+    function paint() {
+      frame = 0;
+      const midpoint = stage.scrollLeft + stage.clientWidth / 2;
+      slides.forEach(slide => {
+        const distance = Math.max(-1, Math.min(1, (center(slide) - midpoint) / stage.clientWidth));
+        slide.style.transform = `rotate(${distance * 7}deg) scale(${1 - Math.abs(distance) * .05})`;
+        slide.style.opacity = 1 - Math.abs(distance) * .5;
+      });
+      const current = nearest();
+      dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === current)));
+      prev.disabled = current === 0; next.disabled = current === slides.length - 1;
+    }
+    function announce() {
+      active = nearest();
+      status.textContent = `${active + 1} of ${slides.length}: ${slides[active].querySelector('h3').textContent}`;
+    }
+    function go(index, instant = false) {
+      active = clamp(index);
+      stage.scrollTo({left: center(slides[active]) - stage.clientWidth / 2, behavior: instant || motion.matches ? 'instant' : 'smooth'});
+    }
+    stage.addEventListener('scroll', () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+      clearTimeout(settleTimer); settleTimer = setTimeout(announce, 160);
+    }, {passive: true});
+    prev.addEventListener('click', () => go(active - 1));
+    next.addEventListener('click', () => go(active + 1));
+    stage.addEventListener('keydown', e => {
+      const actions = {ArrowLeft: active - 1, ArrowRight: active + 1, Home: 0, End: slides.length - 1};
+      if (e.key in actions) { e.preventDefault(); go(actions[e.key]); }
+    });
+    // Touch and trackpad scrolling remain native; add grab-to-scroll for a mouse.
+    stage.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      suppressClick = false;
+      drag = {x: e.clientX, left: stage.scrollLeft, moved: false, id: e.pointerId};
+    });
+    window.addEventListener('pointermove', e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.x;
+      if (!drag.moved && Math.abs(dx) < 6) return;
+      drag.moved = true; stage.classList.add('dragging');
+      stage.scrollLeft = drag.left - dx;
+    });
+    function endDrag(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      const moved = drag.moved;
+      const dx = e.clientX - drag.x;
+      const from = active;
+      drag = null; stage.classList.remove('dragging');
+      if (moved) {
+        suppressClick = true;
+        let destination = nearest();
+        if (destination === from && Math.abs(dx) > 40) destination = from - Math.sign(dx);
+        go(destination);
+        setTimeout(() => { suppressClick = false; }, 0);
+      }
+    }
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', e => {
+      if (drag && e.pointerId === drag.id) { drag = null; stage.classList.remove('dragging'); go(nearest()); }
+    });
+    stage.addEventListener('dragstart', e => e.preventDefault());
+    stage.addEventListener('click', e => {
+      if (suppressClick) { e.preventDefault(); e.stopPropagation(); return; }
+      const card = e.target.closest('.slide');
+      const index = slides.indexOf(card);
+      if (index >= 0 && index !== nearest()) { e.preventDefault(); go(index); }
+    }, true);
+    stage.addEventListener('focusin', e => {
+      const index = slides.indexOf(e.target.closest('.slide'));
+      if (index >= 0 && index !== nearest()) go(index);
+    });
+    new ResizeObserver(() => { go(active, true); paint(); }).observe(stage);
+    motion.addEventListener('change', paint);
+    paint(); announce();
+  })();
+</script>
+</body>
+</html>
